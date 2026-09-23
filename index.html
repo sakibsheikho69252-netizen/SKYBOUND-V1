@@ -1,0 +1,4439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1,
+      user-scalable=no, viewport-fit=cover">
+
+<meta name="theme-color" content="#7fd4ff">
+<meta name="application-name" content="SKYBOUND: Chaos Run">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<title>SKYBOUND: Chaos Run — 3D Endless Runner Game</title>
+
+<meta name="description"
+      content="SKYBOUND: Chaos Run is a mobile-friendly 3D endless runner browser game. Dodge obstacles, collect energy, survive longer and beat your high score.">
+
+<meta name="robots" content="index, follow">
+<meta name="googlebot" content="index, follow">
+
+<link rel="canonical"
+      href="https://sakibsheikho69252-netizen.github.io/SKYBOUND/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="SKYBOUND: Chaos Run">
+<meta property="og:description"
+      content="A fast-paced mobile-friendly 3D endless runner game. Dodge, collect and survive.">
+<meta property="og:url"
+      content="https://sakibsheikho69252-netizen.github.io/SKYBOUND/">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SKYBOUND: Chaos Run">
+<meta name="twitter:description"
+      content="Play SKYBOUND: Chaos Run — a mobile-friendly 3D endless runner game.">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"VideoGame",
+  "name":"SKYBOUND: Chaos Run",
+  "url":"https://sakibsheikho69252-netizen.github.io/SKYBOUND/",
+  "description":"A mobile-friendly 3D endless runner browser game where players dodge obstacles, collect energy and survive as long as possible.",
+  "genre":["Action","Endless Runner","Casual"],
+  "gamePlatform":["Web Browser","Mobile Web"],
+  "applicationCategory":"Game",
+  "operatingSystem":"Any"
+}
+</script>
+
+<style>
+:root{
+  --sky:#7fd4ff;
+  --sky-deep:#4fb6f2;
+  --coral:#ff6b8b;
+  --gold:#ffd166;
+  --teal:#4cc9f0;
+  --violet:#8338ec;
+  --ink:#1c1240;
+  --ink-soft:#392a66;
+  --paper:#fff9ef;
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  position:fixed;
+  overscroll-behavior:none;
+  background:var(--ink);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+  color:var(--ink);
+  touch-action:none;
+}
+
+body{
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+#gameCanvas{
+  position:fixed;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  touch-action:none;
+  outline:none;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+  font-weight:800;
+  font-size:17px;
+  letter-spacing:.2px;
+  padding:15px 34px;
+  border-radius:999px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--coral),#ff8fa3);
+  box-shadow:
+    0 8px 0 rgba(0,0,0,.18),
+    0 14px 24px rgba(255,107,139,.35);
+  transform:translateY(0);
+  transition:
+    transform .08s ease,
+    box-shadow .08s ease;
+  min-height:52px;
+  min-width:180px;
+}
+
+.btn:active{
+  transform:translateY(5px);
+  box-shadow:
+    0 2px 0 rgba(0,0,0,.18),
+    0 4px 10px rgba(255,107,139,.25);
+}
+
+.btn.secondary{
+  background:linear-gradient(135deg,var(--teal),#6fe0ff);
+  box-shadow:
+    0 8px 0 rgba(0,0,0,.18),
+    0 14px 24px rgba(76,201,240,.35);
+}
+
+.btn.secondary:active{
+  box-shadow:
+    0 2px 0 rgba(0,0,0,.18),
+    0 4px 10px rgba(76,201,240,.25);
+}
+
+.btn.ghost{
+  background:rgba(255,255,255,.18);
+  color:var(--ink);
+  box-shadow:0 6px 0 rgba(0,0,0,.08);
+  backdrop-filter:blur(4px);
+}
+
+.btn.ghost:active{
+  box-shadow:0 1px 0 rgba(0,0,0,.08);
+}
+
+.btn.small{
+  padding:10px 18px;
+  font-size:14px;
+  min-height:40px;
+  min-width:0;
+}
+
+.btn.gold{
+  background:linear-gradient(135deg,var(--gold),#ffb703);
+  box-shadow:
+    0 8px 0 rgba(0,0,0,.18),
+    0 14px 24px rgba(255,209,102,.4);
+  color:#3a2b00;
+}
+
+/* ================= SCREENS ================= */
+
+.screen{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:
+    calc(env(safe-area-inset-top,0px) + 24px)
+    22px
+    calc(env(safe-area-inset-bottom,0px) + 24px);
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(255,255,255,.35),
+      transparent 55%
+    ),
+    linear-gradient(
+      165deg,
+      var(--sky) 0%,
+      var(--sky-deep) 45%,
+      #a685e2 100%
+    );
+
+  text-align:center;
+  overflow-y:auto;
+}
+
+.screen.active{
+  display:flex;
+}
+
+.panel{
+  background:rgba(255,249,239,.94);
+  border-radius:28px;
+  padding:26px 26px 30px;
+  box-shadow:0 20px 50px rgba(28,18,64,.35);
+  max-width:420px;
+  width:100%;
+}
+
+/* ================= LOGO ================= */
+
+.logo-wrap{
+  margin-bottom:18px;
+}
+
+.logo-top{
+  margin:0;
+  font-size:clamp(34px,10vw,52px);
+  font-weight:900;
+  color:#fff;
+  letter-spacing:2px;
+  text-shadow:
+    0 4px 0 rgba(28,18,64,.35),
+    0 10px 22px rgba(28,18,64,.3);
+  line-height:1;
+}
+
+.logo-bottom{
+  font-size:clamp(22px,6.5vw,34px);
+  font-weight:800;
+  letter-spacing:6px;
+  background:linear-gradient(
+    90deg,
+    var(--gold),
+    var(--coral)
+  );
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin-top:4px;
+}
+
+.tagline{
+  color:rgba(255,255,255,.92);
+  font-weight:700;
+  letter-spacing:3px;
+  font-size:13px;
+  margin-top:10px;
+  text-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+
+.best-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:var(--ink);
+  color:var(--gold);
+  padding:8px 18px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:14px;
+  margin:18px 0 6px;
+}
+
+.menu-actions{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:center;
+  margin-top:16px;
+}
+
+/* ================= TUTORIAL ================= */
+
+.tutorial-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:18px 0 22px;
+  text-align:left;
+}
+
+.tutorial-card{
+  background:#fff;
+  border-radius:16px;
+  padding:12px 14px;
+  box-shadow:0 4px 12px rgba(28,18,64,.12);
+}
+
+.tutorial-card .icon{
+  font-size:24px;
+}
+
+.tutorial-card .label{
+  font-weight:800;
+  font-size:13px;
+  margin-top:4px;
+  color:var(--ink);
+}
+
+.tutorial-card .desc{
+  font-size:12px;
+  color:var(--ink-soft);
+  margin-top:2px;
+}
+
+h2.screen-title{
+  font-size:26px;
+  font-weight:900;
+  margin:0 0 6px;
+  color:var(--ink);
+}
+
+p.screen-sub{
+  color:var(--ink-soft);
+  font-size:14px;
+  margin:0 0 10px;
+}
+
+/* ================= STATS ================= */
+
+.stat-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 4px;
+  border-bottom:1px solid rgba(28,18,64,.08);
+}
+
+.stat-row:last-child{
+  border-bottom:none;
+}
+
+.stat-label{
+  font-size:13px;
+  color:var(--ink-soft);
+  font-weight:700;
+}
+
+.stat-value{
+  font-size:20px;
+  font-weight:900;
+  color:var(--ink);
+}
+
+.record-badge{
+  display:none;
+  margin:14px auto 4px;
+  background:linear-gradient(
+    135deg,
+    var(--gold),
+    #ff9f1c
+  );
+  color:#3a2b00;
+  font-weight:900;
+  padding:8px 20px;
+  border-radius:999px;
+  font-size:14px;
+  box-shadow:0 6px 16px rgba(255,159,28,.5);
+  animation:pulseBadge 1s ease-in-out infinite;
+}
+
+@keyframes pulseBadge{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+}
+
+.gameover-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-top:20px;
+}
+
+/* ================= HUD ================= */
+
+#hud{
+  position:fixed;
+  inset:0;
+  z-index:5;
+  display:none;
+  pointer-events:none;
+  padding:
+    calc(env(safe-area-inset-top,0px) + 14px)
+    16px 0;
+}
+
+#hud.active{
+  display:block;
+}
+
+.hud-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.hud-block{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.hud-score{
+  font-size:clamp(22px,7vw,30px);
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 3px 8px rgba(0,0,0,.35);
+  line-height:1;
+}
+
+.hud-best{
+  font-size:12px;
+  font-weight:700;
+  color:rgba(255,255,255,.85);
+  text-shadow:0 2px 4px rgba(0,0,0,.3);
+}
+
+.hud-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
+
+.hud-lives{
+  font-size:18px;
+  letter-spacing:2px;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));
+}
+
+.hud-multiplier{
+  background:rgba(28,18,64,.55);
+  color:var(--gold);
+  font-weight:800;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  backdrop-filter:blur(3px);
+}
+
+.pause-btn{
+  pointer-events:auto;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  background:rgba(28,18,64,.55);
+  color:#fff;
+  font-size:18px;
+  backdrop-filter:blur(3px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:6px;
+}
+
+.hud-bottom{
+  position:absolute;
+  left:16px;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+}
+
+.hud-distance{
+  background:rgba(28,18,64,.5);
+  color:#fff;
+  font-weight:700;
+  font-size:12px;
+  padding:5px 12px;
+  border-radius:999px;
+}
+
+/* ================= HIT FLASH ================= */
+
+#hitFlash{
+  position:fixed;
+  inset:0;
+  z-index:6;
+  pointer-events:none;
+  opacity:0;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,60,90,0) 40%,
+      rgba(255,30,60,.55) 100%
+    );
+}
+
+#hitFlash.flash{
+  animation:hitFlashAnim .45s ease-out;
+}
+
+@keyframes hitFlashAnim{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+
+/* ================= TOAST ================= */
+
+#toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 30px);
+  z-index:20;
+  transform:translate(-50%,20px);
+  background:var(--ink);
+  color:#fff;
+  font-weight:700;
+  font-size:13px;
+  padding:10px 20px;
+  border-radius:999px;
+  opacity:0;
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
+  pointer-events:none;
+  white-space:nowrap;
+}
+
+#toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* ================= ERROR BOX ================= */
+
+#errorScreen{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:#170b2e;
+  color:#fff;
+  text-align:center;
+}
+
+#errorScreen.active{
+  display:flex;
+}
+
+.error-box{
+  width:min(430px,100%);
+  background:#fff9ef;
+  color:#1c1240;
+  border-radius:24px;
+  padding:26px;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+
+.error-box h2{
+  margin:0 0 10px;
+}
+
+.error-box p{
+  font-size:14px;
+  line-height:1.5;
+}
+
+.error-code{
+  background:#eee8dc;
+  border-radius:12px;
+  padding:12px;
+  margin-top:12px;
+  font-size:12px;
+  word-break:break-word;
+  text-align:left;
+}
+
+@media (min-width:640px){
+  .tutorial-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<div id="hitFlash"></div>
+
+<!-- ================= HUD ================= -->
+
+<div id="hud">
+
+  <div class="hud-top">
+
+    <div class="hud-block">
+      <div class="hud-score" id="hudScore">0</div>
+      <div class="hud-best" id="hudBest">Best 0</div>
+    </div>
+
+    <div class="hud-right">
+
+      <div class="hud-lives" id="hudLives">
+        ❤️❤️❤️
+      </div>
+
+      <div class="hud-multiplier" id="hudMultiplier">
+        x1
+      </div>
+
+      <button
+        class="pause-btn"
+        id="pauseBtn"
+        aria-label="Pause game">
+        ⏸
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="hud-bottom">
+    <div class="hud-distance" id="hudDistance">
+      0 m
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= MENU ================= -->
+
+<div class="screen active" id="menuScreen">
+
+  <div class="logo-wrap">
+
+    <h1 class="logo-top">
+      SKYBOUND
+    </h1>
+
+    <div class="logo-bottom">
+      CHAOS RUN
+    </div>
+
+    <div class="tagline">
+      RUN · DODGE · SURVIVE
+    </div>
+
+  </div>
+
+  <div class="best-pill">
+    🏆 <span id="menuBest">0</span>
+  </div>
+
+  <div class="menu-actions">
+
+    <button class="btn gold" id="playBtn">
+      Play now
+    </button>
+
+    <button class="btn ghost" id="howToPlayBtn">
+      How to play
+    </button>
+
+    <button class="btn ghost small" id="soundToggleBtn">
+      🔊 Sound on
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ================= HOW TO PLAY ================= -->
+
+<div class="screen" id="howToPlayScreen">
+
+  <div class="panel">
+
+    <h2 class="screen-title">
+      How to play
+    </h2>
+
+    <p class="screen-sub">
+      Swipe or use the arrow keys to switch lanes.
+    </p>
+
+    <div class="tutorial-grid">
+
+      <div class="tutorial-card">
+        <div class="icon">⬅️</div>
+        <div class="label">Swipe left</div>
+        <div class="desc">Move left</div>
+      </div>
+
+      <div class="tutorial-card">
+        <div class="icon">➡️</div>
+        <div class="label">Swipe right</div>
+        <div class="desc">Move right</div>
+      </div>
+
+      <div class="tutorial-card">
+        <div class="icon">🚧</div>
+        <div class="label">Avoid</div>
+        <div class="desc">Obstacles</div>
+      </div>
+
+      <div class="tutorial-card">
+        <div class="icon">⭐</div>
+        <div class="label">Collect</div>
+        <div class="desc">Golden energy</div>
+      </div>
+
+      <div class="tutorial-card">
+        <div class="icon">⏱️</div>
+        <div class="label">Survive</div>
+        <div class="desc">As long as you can</div>
+      </div>
+
+      <div class="tutorial-card">
+        <div class="icon">🎮</div>
+        <div class="label">Desktop</div>
+        <div class="desc">Arrow keys or A/D</div>
+      </div>
+
+    </div>
+
+    <button class="btn secondary" id="backFromHowToPlayBtn">
+      Got it
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ================= PAUSE ================= -->
+
+<div class="screen" id="pauseScreen">
+
+  <div class="panel">
+
+    <h2 class="screen-title">
+      Game paused
+    </h2>
+
+    <p class="screen-sub">
+      Take a breath, then get back in the sky.
+    </p>
+
+    <div class="menu-actions">
+
+      <button class="btn gold" id="resumeBtn">
+        Resume
+      </button>
+
+      <button class="btn secondary" id="restartFromPauseBtn">
+        Restart
+      </button>
+
+      <button class="btn ghost" id="menuFromPauseBtn">
+        Main menu
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= GAME OVER ================= -->
+
+<div class="screen" id="gameOverScreen">
+
+  <div class="panel">
+
+    <h2 class="screen-title">
+      Game over
+    </h2>
+
+    <div class="record-badge" id="newRecordBadge">
+      ✨ New record!
+    </div>
+
+    <div style="margin-top:8px;">
+
+      <div class="stat-row">
+        <span class="stat-label">Score</span>
+        <span class="stat-value" id="finalScore">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="stat-label">Best</span>
+        <span class="stat-value" id="finalBest">0</span>
+      </div>
+
+      <div class="stat-row">
+        <span class="stat-label">Distance</span>
+        <span class="stat-value" id="finalDistance">0 m</span>
+      </div>
+
+    </div>
+
+    <div class="gameover-actions">
+
+      <button class="btn gold" id="playAgainBtn">
+        Play again
+      </button>
+
+      <button class="btn secondary" id="shareBtn">
+        Share score
+      </button>
+
+      <button class="btn ghost" id="menuFromGameOverBtn">
+        Main menu
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= ERROR SCREEN ================= -->
+
+<div id="errorScreen">
+
+  <div class="error-box">
+
+    <h2>Game could not start</h2>
+
+    <p>
+      SKYBOUND could not initialize the 3D engine.
+      Please reload the page and make sure JavaScript and WebGL
+      are enabled.
+    </p>
+
+    <div class="error-code" id="errorMessage">
+      Unknown error
+    </div>
+
+    <button
+      class="btn gold"
+      onclick="location.reload()">
+      Reload game
+    </button>
+
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   SKYBOUND: CHAOS RUN
+   ENGINE LOADER
+   ============================================================ */
+
+(function(){
+
+  const urls = [
+    "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js",
+    "https://unpkg.com/three@0.128.0/build/three.min.js"
+  ];
+
+  let index = 0;
+
+  function loadThree(){
+
+    if(index >= urls.length){
+
+      showFatalError(
+        "Three.js could not be loaded. Check your internet connection or CDN access."
+      );
+
+      return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src = urls[index];
+
+    script.onload = function(){
+
+      if(typeof THREE === "undefined"){
+
+        index++;
+
+        loadThree();
+
+        return;
+      }
+
+      startGameApplication();
+
+    };
+
+    script.onerror = function(){
+
+      index++;
+
+      loadThree();
+
+    };
+
+    document.head.appendChild(script);
+  }
+
+  function showFatalError(message){
+
+    const screen = document.getElementById("errorScreen");
+    const msg = document.getElementById("errorMessage");
+
+    if(msg){
+      msg.textContent = message;
+    }
+
+    if(screen){
+      screen.classList.add("active");
+    }
+
+    console.error(message);
+  }
+
+  window.__skyboundFatalError = showFatalError;
+
+  loadThree();
+
+})();
+
+
+/* ============================================================
+   MAIN APPLICATION
+   ============================================================ */
+
+function startGameApplication(){
+
+"use strict";
+
+
+/* ================= CONFIG ================= */
+
+const CONFIG = {
+
+  LANES: [-3.2, 0, 3.2],
+
+  LANE_CHANGE_LERP: 10,
+
+  BASE_SPEED: 13,
+
+  MAX_SPEED: 32,
+
+  DIFFICULTY_RATE: 0.16,
+
+  SPAWN_INTERVAL_START: 1.35,
+
+  SPAWN_INTERVAL_MIN: 0.55,
+
+  SPAWN_DIFFICULTY_RATE: 0.012,
+
+  DOUBLE_PATTERN_UNLOCK_TIME: 16,
+
+  TRIPLE_PATTERN_UNLOCK_TIME: 30,
+
+  INVULNERABILITY_TIME: 1.6,
+
+  ROAD_SEGMENT_LENGTH: 20,
+
+  ROAD_SEGMENT_COUNT: 10,
+
+  START_LIVES: 3,
+
+  ORB_SCORE: 50,
+
+  SCORE_PER_SECOND: 10,
+
+  SPAWN_Z: -165,
+
+  DESPAWN_Z: 20,
+
+  MAX_PARTICLES: 140,
+
+  BEST_KEY: "skyboundChaosRunBest",
+
+  GAME_URL:
+    "https://sakibsheikho69252-netizen.github.io/SKYBOUND/"
+
+};
+
+
+/* ================= GLOBALS ================= */
+
+let scene = null;
+let camera = null;
+let renderer = null;
+let clock = null;
+
+let player = null;
+let playerBox = null;
+
+let bobTime = 0;
+
+let camLerpX = 0;
+
+let cameraShake = 0;
+
+let currentLane = 1;
+
+let targetLaneX = CONFIG.LANES[1];
+
+let state = "MENU";
+
+let lives = CONFIG.START_LIVES;
+
+let score = 0;
+
+let best = 0;
+
+let multiplier = 1;
+
+let distance = 0;
+
+let elapsed = 0;
+
+let speed = CONFIG.BASE_SPEED;
+
+let spawnTimer = 0;
+
+let spawnInterval =
+  CONFIG.SPAWN_INTERVAL_START;
+
+let invulnerableTimer = 0;
+
+let obstacles = [];
+
+let collectibles = [];
+
+let particles = [];
+
+let roadSegments = [];
+
+let bgObjects = [];
+
+let OBSTACLE_GEO = {};
+
+let OBSTACLE_MAT = {};
+
+let COLLECTIBLE_GEO = null;
+
+let COLLECTIBLE_MAT = null;
+
+let PARTICLE_GEO = null;
+
+let audioCtx = null;
+
+let soundEnabled = true;
+
+let touchStartX = 0;
+
+let touchStartY = 0;
+
+let touchStartTime = 0;
+
+let touchActive = false;
+
+
+/* ================= HELPERS ================= */
+
+function rand(min,max){
+
+  return min + Math.random() * (max-min);
+
+}
+
+function randInt(min,max){
+
+  return Math.floor(
+    rand(min,max+1)
+  );
+
+}
+
+function clamp(v,a,b){
+
+  return Math.max(
+    a,
+    Math.min(b,v)
+  );
+
+}
+
+
+/* ================= STORAGE ================= */
+
+function loadStoredBest(){
+
+  try{
+
+    const value =
+      localStorage.getItem(
+        CONFIG.BEST_KEY
+      );
+
+    return parseInt(value || "0",10) || 0;
+
+  }catch(error){
+
+    console.warn(
+      "localStorage unavailable",
+      error
+    );
+
+    return 0;
+
+  }
+
+}
+
+
+function saveStoredBest(value){
+
+  try{
+
+    localStorage.setItem(
+      CONFIG.BEST_KEY,
+      String(value)
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Could not save best score",
+      error
+    );
+
+  }
+
+}
+
+
+/* ================= THREE SCENE ================= */
+
+function createScene(){
+
+  scene = new THREE.Scene();
+
+  scene.background =
+    new THREE.Color(0x7fd4ff);
+
+  scene.fog =
+    new THREE.Fog(
+      0x7fd4ff,
+      45,
+      185
+    );
+
+
+  try{
+
+    renderer =
+      new THREE.WebGLRenderer({
+
+        canvas:
+          document.getElementById(
+            "gameCanvas"
+          ),
+
+        antialias:true,
+
+        powerPreference:"high-performance"
+
+      });
+
+  }catch(error){
+
+    window.__skyboundFatalError(
+      "WebGL initialization failed: " +
+      error.message
+    );
+
+    throw error;
+
+  }
+
+
+  renderer.setPixelRatio(
+    Math.min(
+      window.devicePixelRatio || 1,
+      1.5
+    )
+  );
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+
+
+  renderer.shadowMap.enabled = true;
+
+  renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
+
+
+  clock = new THREE.Clock();
+
+}
+
+
+/* ================= CAMERA ================= */
+
+function createCamera(){
+
+  camera =
+    new THREE.PerspectiveCamera(
+      62,
+      window.innerWidth /
+      window.innerHeight,
+      0.1,
+      500
+    );
+
+  camera.position.set(
+    0,
+    5.2,
+    9
+  );
+
+  camera.lookAt(
+    0,
+    1.4,
+    -18
+  );
+
+}
+
+
+/* ================= LIGHTS ================= */
+
+function createLights(){
+
+  const hemi =
+    new THREE.HemisphereLight(
+      0xffffff,
+      0x88aadd,
+      0.95
+    );
+
+  scene.add(hemi);
+
+
+  const dir =
+    new THREE.DirectionalLight(
+      0xfff4e0,
+      0.9
+    );
+
+  dir.position.set(
+    -14,
+    24,
+    12
+  );
+
+  dir.castShadow = true;
+
+
+  dir.shadow.mapSize.set(
+    512,
+    512
+  );
+
+
+  dir.shadow.camera.left = -22;
+
+  dir.shadow.camera.right = 22;
+
+  dir.shadow.camera.top = 22;
+
+  dir.shadow.camera.bottom = -22;
+
+  dir.shadow.camera.near = 1;
+
+  dir.shadow.camera.far = 70;
+
+
+  scene.add(dir);
+
+
+  const ambient =
+    new THREE.AmbientLight(
+      0xffffff,
+      0.3
+    );
+
+  scene.add(ambient);
+
+}
+
+
+/* ================= PLAYER ================= */
+
+function createPlayer(){
+
+  player =
+    new THREE.Group();
+
+
+  const bodyMat =
+    new THREE.MeshStandardMaterial({
+      color:0xff6b6b,
+      roughness:0.5,
+      transparent:true
+    });
+
+
+  const body =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        0.9,
+        0.9,
+        1.3
+      ),
+      bodyMat
+    );
+
+
+  body.position.y = 0.55;
+
+  body.castShadow = true;
+
+
+  const headMat =
+    new THREE.MeshStandardMaterial({
+      color:0xffe66d,
+      roughness:0.4,
+      transparent:true
+    });
+
+
+  const head =
+    new THREE.Mesh(
+      new THREE.SphereGeometry(
+        0.4,
+        14,
+        10
+      ),
+      headMat
+    );
+
+
+  head.position.set(
+    0,
+    1.24,
+    0.12
+  );
+
+
+  head.castShadow = true;
+
+
+  const visorMat =
+    new THREE.MeshStandardMaterial({
+      color:0x1c1240,
+      emissive:0x4cc9f0,
+      emissiveIntensity:0.7
+    });
+
+
+  const visor =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        0.48,
+        0.16,
+        0.14
+      ),
+      visorMat
+    );
+
+
+  visor.position.set(
+    0,
+    1.28,
+    0.4
+  );
+
+
+  const finGeo =
+    new THREE.BoxGeometry(
+      0.16,
+      0.5,
+      0.68
+    );
+
+
+  const finMat =
+    new THREE.MeshStandardMaterial({
+      color:0x4cc9f0,
+      transparent:true
+    });
+
+
+  const finL =
+    new THREE.Mesh(
+      finGeo,
+      finMat
+    );
+
+
+  finL.position.set(
+    -0.6,
+    0.5,
+    -0.05
+  );
+
+
+  finL.rotation.z = 0.18;
+
+  finL.castShadow = true;
+
+
+  const finR =
+    new THREE.Mesh(
+      finGeo,
+      finMat.clone()
+    );
+
+
+  finR.position.set(
+    0.6,
+    0.5,
+    -0.05
+  );
+
+
+  finR.rotation.z = -0.18;
+
+  finR.castShadow = true;
+
+
+  player.add(
+    body,
+    head,
+    visor,
+    finL,
+    finR
+  );
+
+
+  player.position.set(
+    CONFIG.LANES[1],
+    0,
+    0
+  );
+
+
+  player.userData.mats = [
+    bodyMat,
+    headMat,
+    finMat,
+    finR.material
+  ];
+
+
+  scene.add(player);
+
+
+  playerBox =
+    new THREE.Box3();
+
+}
+
+
+/* ================= PLAYER UPDATE ================= */
+
+function updatePlayer(dt){
+
+  if(!player) return;
+
+
+  player.position.x +=
+    (
+      targetLaneX -
+      player.position.x
+    ) *
+    Math.min(
+      1,
+      CONFIG.LANE_CHANGE_LERP * dt
+    );
+
+
+  const diff =
+    targetLaneX -
+    player.position.x;
+
+
+  const targetTilt =
+    clamp(
+      -diff * 0.35,
+      -0.5,
+      0.5
+    );
+
+
+  player.rotation.z +=
+    (
+      targetTilt -
+      player.rotation.z
+    ) *
+    Math.min(
+      1,
+      10 * dt
+    );
+
+
+  bobTime +=
+    dt *
+    (6 + speed * 0.15);
+
+
+  player.position.y =
+    Math.sin(bobTime) * 0.07;
+
+
+  if(invulnerableTimer > 0){
+
+    invulnerableTimer =
+      Math.max(
+        0,
+        invulnerableTimer - dt
+      );
+
+
+    const flicker =
+      0.35 +
+      0.55 *
+      Math.abs(
+        Math.sin(elapsed * 20)
+      );
+
+
+    player.userData.mats.forEach(
+      m => m.opacity = flicker
+    );
+
+  }else{
+
+    player.userData.mats.forEach(
+      m => m.opacity = 1
+    );
+
+  }
+
+}
+
+
+/* ================= MOVE PLAYER ================= */
+
+function movePlayer(direction){
+
+  if(state !== "PLAYING"){
+    return;
+  }
+
+
+  currentLane =
+    clamp(
+      currentLane + direction,
+      0,
+      2
+    );
+
+
+  targetLaneX =
+    CONFIG.LANES[currentLane];
+
+}
+
+
+/* ================= ROAD ================= */
+
+function createRoad(){
+
+  const baseMat =
+    new THREE.MeshStandardMaterial({
+      color:0xfff9ef,
+      roughness:0.85
+    });
+
+
+  const stripeMat =
+    new THREE.MeshStandardMaterial({
+      color:0xffd166,
+      emissive:0xffd166,
+      emissiveIntensity:0.2
+    });
+
+
+  const railMatA =
+    new THREE.MeshStandardMaterial({
+      color:0x4cc9f0
+    });
+
+
+  const railMatB =
+    new THREE.MeshStandardMaterial({
+      color:0xff6b8b
+    });
+
+
+  for(
+    let i=0;
+    i<CONFIG.ROAD_SEGMENT_COUNT;
+    i++
+  ){
+
+    const seg =
+      new THREE.Group();
+
+
+    const base =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          11,
+          0.5,
+          CONFIG.ROAD_SEGMENT_LENGTH
+        ),
+        baseMat
+      );
+
+
+    base.position.y = -0.25;
+
+    base.receiveShadow = true;
+
+    seg.add(base);
+
+
+    [-1.75,1.75].forEach(
+      laneX => {
+
+        const stripe =
+          new THREE.Mesh(
+            new THREE.BoxGeometry(
+              0.14,
+              0.03,
+              CONFIG.ROAD_SEGMENT_LENGTH
+            ),
+            stripeMat
+          );
+
+
+        stripe.position.set(
+          laneX,
+          0.02,
+          0
+        );
+
+
+        seg.add(stripe);
+
+      }
+    );
+
+
+    const railMat =
+      i % 2 === 0
+        ? railMatA
+        : railMatB;
+
+
+    [-5.6,5.6].forEach(
+      sideX => {
+
+        const rail =
+          new THREE.Mesh(
+            new THREE.BoxGeometry(
+              0.3,
+              0.6,
+              CONFIG.ROAD_SEGMENT_LENGTH
+            ),
+            railMat
+          );
+
+
+        rail.position.set(
+          sideX,
+          0.05,
+          0
+        );
+
+
+        rail.castShadow = true;
+
+        seg.add(rail);
+
+      }
+    );
+
+
+    seg.position.set(
+      0,
+      0,
+      -i *
+      CONFIG.ROAD_SEGMENT_LENGTH
+    );
+
+
+    scene.add(seg);
+
+    roadSegments.push(seg);
+
+  }
+
+}
+
+
+/* ================= ROAD UPDATE ================= */
+
+function updateRoad(dt){
+
+  const moveZ =
+    speed * dt;
+
+
+  let minZ = Infinity;
+
+
+  roadSegments.forEach(
+    seg => {
+
+      seg.position.z += moveZ;
+
+      if(
+        seg.position.z <
+        minZ
+      ){
+        minZ =
+          seg.position.z;
+      }
+
+    }
+  );
+
+
+  roadSegments.forEach(
+    seg => {
+
+      if(
+        seg.position.z -
+        CONFIG.ROAD_SEGMENT_LENGTH / 2
+        >
+        CONFIG.DESPAWN_Z
+      ){
+
+        seg.position.z =
+          minZ -
+          CONFIG.ROAD_SEGMENT_LENGTH;
+
+        minZ =
+          seg.position.z;
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ================= ENVIRONMENT ================= */
+
+function createEnvironment(){
+
+  const islandMat =
+    new THREE.MeshStandardMaterial({
+      color:0x8ecae6
+    });
+
+
+  const mountainMat =
+    new THREE.MeshStandardMaterial({
+      color:0xc9a6e8
+    });
+
+
+  const cloudMat =
+    new THREE.MeshStandardMaterial({
+      color:0xffffff,
+      transparent:true,
+      opacity:0.92
+    });
+
+
+  const structureMat =
+    new THREE.MeshStandardMaterial({
+      color:0xffb703
+    });
+
+
+  const add =
+    mesh => {
+
+      scene.add(mesh);
+
+      bgObjects.push(mesh);
+
+    };
+
+
+  for(
+    let i=0;
+    i<10;
+    i++
+  ){
+
+    const island =
+      new THREE.Mesh(
+        new THREE.ConeGeometry(
+          rand(2,4),
+          rand(1.5,3),
+          6
+        ),
+        islandMat
+      );
+
+
+    island.rotation.x =
+      Math.PI;
+
+
+    island.position.set(
+      Math.random() < 0.5
+        ? -rand(15,42)
+        : rand(15,42),
+
+      rand(-6,-2),
+
+      rand(-260,-10)
+    );
+
+
+    add(island);
+
+  }
+
+
+  for(
+    let i=0;
+    i<8;
+    i++
+  ){
+
+    const mountain =
+      new THREE.Mesh(
+        new THREE.ConeGeometry(
+          rand(6,10),
+          rand(10,18),
+          5
+        ),
+        mountainMat
+      );
+
+
+    mountain.position.set(
+      Math.random() < 0.5
+        ? -rand(28,55)
+        : rand(28,55),
+
+      rand(0,4),
+
+      rand(-260,-20)
+    );
+
+
+    add(mountain);
+
+  }
+
+
+  for(
+    let i=0;
+    i<10;
+    i++
+  ){
+
+    const cloud =
+      new THREE.Group();
+
+
+    const parts =
+      3 +
+      Math.floor(
+        Math.random() * 3
+      );
+
+
+    for(
+      let p=0;
+      p<parts;
+      p++
+    ){
+
+      const part =
+        new THREE.Mesh(
+          new THREE.SphereGeometry(
+            rand(1,2),
+            8,
+            6
+          ),
+          cloudMat
+        );
+
+
+      part.position.set(
+        rand(-1.5,1.5),
+        rand(-0.3,0.3),
+        rand(-1.5,1.5)
+      );
+
+
+      cloud.add(part);
+
+    }
+
+
+    cloud.position.set(
+      rand(-32,32),
+      rand(9,16),
+      rand(-260,-10)
+    );
+
+
+    add(cloud);
+
+  }
+
+
+  for(
+    let i=0;
+    i<6;
+    i++
+  ){
+
+    const structure =
+      new THREE.Mesh(
+        new THREE.BoxGeometry(
+          rand(2,3),
+          rand(2,5),
+          rand(2,3)
+        ),
+        structureMat
+      );
+
+
+    structure.position.set(
+      Math.random() < 0.5
+        ? -rand(18,30)
+        : rand(18,30),
+
+      rand(1,6),
+
+      rand(-260,-20)
+    );
+
+
+    structure.rotation.y =
+      rand(0,Math.PI);
+
+
+    add(structure);
+
+  }
+
+}
+
+
+/* ================= ENVIRONMENT UPDATE ================= */
+
+function updateEnvironment(dt){
+
+  const moveZ =
+    speed * dt;
+
+
+  bgObjects.forEach(
+    obj => {
+
+      obj.position.z += moveZ;
+
+
+      if(
+        obj.position.z >
+        CONFIG.DESPAWN_Z + 30
+      ){
+
+        obj.position.z -= 280;
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ================= IDLE ================= */
+
+function idleAnim(dt){
+
+  const moveZ =
+    3.2 * dt;
+
+
+  bgObjects.forEach(
+    obj => {
+
+      obj.position.z += moveZ;
+
+
+      if(
+        obj.position.z >
+        CONFIG.DESPAWN_Z + 30
+      ){
+
+        obj.position.z -= 280;
+
+      }
+
+    }
+  );
+
+
+  player.rotation.y +=
+    dt * 0.5;
+
+
+  bobTime +=
+    dt * 5;
+
+
+  player.position.y =
+    Math.sin(bobTime) *
+    0.1 +
+    0.1;
+
+
+  updateParticles(dt);
+
+}
+
+
+/* ================= OBSTACLES ================= */
+
+const OBSTACLE_TYPES = [
+  "cube",
+  "bar",
+  "ball",
+  "laser",
+  "moving",
+  "rock",
+  "ring"
+];
+
+
+const OBSTACLE_DEFS = {
+
+  cube:{
+    geo:() =>
+      new THREE.BoxGeometry(
+        1.4,
+        1.4,
+        1.4
+      ),
+    color:0xff5d8f,
+    y:0.9
+  },
+
+  bar:{
+    geo:() =>
+      new THREE.BoxGeometry(
+        2.6,
+        0.4,
+        0.4
+      ),
+    color:0xffb703,
+    y:1.3
+  },
+
+  ball:{
+    geo:() =>
+      new THREE.SphereGeometry(
+        0.75,
+        14,
+        10
+      ),
+    color:0x06d6a0,
+    y:0.75
+  },
+
+  laser:{
+    geo:() =>
+      new THREE.BoxGeometry(
+        0.25,
+        2.6,
+        0.25
+      ),
+    color:0xff006e,
+    y:1.3,
+    emissive:true,
+    alpha:true
+  },
+
+  moving:{
+    geo:() =>
+      new THREE.BoxGeometry(
+        1.2,
+        1.2,
+        1.2
+      ),
+    color:0x8338ec,
+    y:0.9
+  },
+
+  rock:{
+    geo:() =>
+      new THREE.DodecahedronGeometry(
+        0.8,
+        0
+      ),
+    color:0x6c757d,
+    y:0.8,
+    flat:true
+  },
+
+  ring:{
+    geo:() =>
+      new THREE.TorusGeometry(
+        0.9,
+        0.22,
+        10,
+        20
+      ),
+    color:0x3a86ff,
+    y:1.1
+  }
+
+};
+
+
+/* ================= OBSTACLE CACHE ================= */
+
+function initObstacleCaches(){
+
+  OBSTACLE_TYPES.forEach(
+    type => {
+
+      const def =
+        OBSTACLE_DEFS[type];
+
+
+      OBSTACLE_GEO[type] =
+        def.geo();
+
+
+      OBSTACLE_MAT[type] =
+        new THREE.MeshStandardMaterial({
+
+          color:def.color,
+
+          emissive:
+            def.emissive
+              ? def.color
+              : 0x000000,
+
+          emissiveIntensity:
+            def.emissive
+              ? 0.85
+              : 0,
+
+          flatShading:
+            !!def.flat,
+
+          transparent:
+            !!def.alpha,
+
+          opacity:1,
+
+          roughness:0.45
+
+        });
+
+    }
+  );
+
+}
+
+
+/* ================= CREATE OBSTACLE ================= */
+
+function createObstacle(type){
+
+  const def =
+    OBSTACLE_DEFS[type];
+
+
+  const mesh =
+    new THREE.Mesh(
+      OBSTACLE_GEO[type],
+      OBSTACLE_MAT[type]
+    );
+
+
+  mesh.position.y =
+    def.y;
+
+
+  mesh.castShadow = true;
+
+
+  return mesh;
+
+}
+
+
+/* ================= SPAWN OBSTACLE ================= */
+
+function spawnObstacleAt(
+  lane,
+  type,
+  z
+){
+
+  const mesh =
+    createObstacle(type);
+
+
+  mesh.position.x =
+    CONFIG.LANES[lane];
+
+
+  mesh.position.z =
+    z;
+
+
+  const def =
+    OBSTACLE_DEFS[type];
+
+
+  const obj = {
+
+    mesh:mesh,
+
+    type:type,
+
+    lane:lane,
+
+    hit:false,
+
+    baseY:def.y,
+
+    seed:
+      Math.random() * 10
+
+  };
+
+
+  scene.add(mesh);
+
+  obstacles.push(obj);
+
+}
+
+
+/* ================= SPAWN MANAGER ================= */
+
+function spawnObstacle(dt){
+
+  spawnTimer += dt;
+
+
+  spawnInterval =
+    Math.max(
+      CONFIG.SPAWN_INTERVAL_MIN,
+
+      CONFIG.SPAWN_INTERVAL_START -
+      elapsed *
+      CONFIG.SPAWN_DIFFICULTY_RATE
+    );
+
+
+  if(
+    spawnTimer <
+    spawnInterval
+  ){
+    return;
+  }
+
+
+  spawnTimer = 0;
+
+
+  const canDouble =
+    elapsed >
+    CONFIG.DOUBLE_PATTERN_UNLOCK_TIME;
+
+
+  const canTriple =
+    elapsed >
+    CONFIG.TRIPLE_PATTERN_UNLOCK_TIME;
+
+
+  const roll =
+    Math.random();
+
+
+  if(
+    canTriple &&
+    roll < 0.18
+  ){
+
+    for(
+      let i=0;
+      i<3;
+      i++
+    ){
+
+      spawnObstacleAt(
+        randInt(0,2),
+        OBSTACLE_TYPES[
+          randInt(
+            0,
+            OBSTACLE_TYPES.length - 1
+          )
+        ],
+        CONFIG.SPAWN_Z -
+        i * 9
+      );
+
+    }
+
+  }else if(
+    canDouble &&
+    roll < 0.5
+  ){
+
+    const safeLane =
+      randInt(0,2);
+
+
+    [0,1,2]
+      .filter(
+        lane =>
+          lane !== safeLane
+      )
+      .forEach(
+        lane => {
+
+          spawnObstacleAt(
+            lane,
+
+            OBSTACLE_TYPES[
+              randInt(
+                0,
+                OBSTACLE_TYPES.length - 1
+              )
+            ],
+
+            CONFIG.SPAWN_Z
+          );
+
+        }
+      );
+
+  }else{
+
+    spawnObstacleAt(
+      randInt(0,2),
+
+      OBSTACLE_TYPES[
+        randInt(
+          0,
+          OBSTACLE_TYPES.length - 1
+        )
+      ],
+
+      CONFIG.SPAWN_Z
+    );
+
+  }
+
+
+  if(
+    Math.random() <
+    0.55
+  ){
+
+    spawnCollectible(
+      randInt(0,2),
+      CONFIG.SPAWN_Z -
+      rand(6,26)
+    );
+
+  }
+
+}
+
+
+/* ================= UPDATE OBSTACLES ================= */
+
+function updateObstacles(dt){
+
+  const moveZ =
+    speed * dt;
+
+
+  for(
+    let i=obstacles.length-1;
+    i>=0;
+    i--
+  ){
+
+    const obj =
+      obstacles[i];
+
+
+    obj.mesh.position.z +=
+      moveZ;
+
+
+    switch(obj.type){
+
+      case "cube":
+
+        obj.mesh.rotation.y +=
+          dt * 1.6;
+
+        obj.mesh.rotation.x +=
+          dt * 0.8;
+
+        break;
+
+
+      case "bar":
+
+        obj.mesh.rotation.y +=
+          dt * 3.2;
+
+        break;
+
+
+      case "ball":
+
+        obj.mesh.rotation.x +=
+          dt *
+          (2 + speed * 0.2);
+
+        break;
+
+
+      case "laser":
+
+        OBSTACLE_MAT.laser.opacity =
+          0.55 +
+          0.4 *
+          Math.sin(
+            elapsed * 10 +
+            obj.seed
+          );
+
+        break;
+
+
+      case "moving":
+
+        obj.mesh.position.y =
+          obj.baseY +
+          Math.sin(
+            elapsed * 4 +
+            obj.seed
+          ) * 0.18;
+
+        break;
+
+
+      case "rock":
+
+        obj.mesh.rotation.x +=
+          dt * 3;
+
+        obj.mesh.rotation.z +=
+          dt * 2;
+
+        break;
+
+
+      case "ring":
+
+        obj.mesh.rotation.z +=
+          dt * 2.4;
+
+        obj.mesh.rotation.y +=
+          dt * 1.2;
+
+        break;
+
+    }
+
+
+    if(
+      obj.mesh.position.z >
+      CONFIG.DESPAWN_Z
+    ){
+
+      removeObstacle(
+        obj,
+        i
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ================= REMOVE OBSTACLE ================= */
+
+function removeObstacle(
+  obj,
+  index
+){
+
+  scene.remove(
+    obj.mesh
+  );
+
+
+  obstacles.splice(
+    index,
+    1
+  );
+
+}
+
+
+/* ================= COLLECTIBLES ================= */
+
+function initCollectibleCache(){
+
+  COLLECTIBLE_GEO =
+    new THREE.OctahedronGeometry(
+      0.4,
+      0
+    );
+
+
+  COLLECTIBLE_MAT =
+    new THREE.MeshStandardMaterial({
+
+      color:0xffd60a,
+
+      emissive:0xffd60a,
+
+      emissiveIntensity:0.9,
+
+      roughness:0.2,
+
+      metalness:0.2
+
+    });
+
+}
+
+
+/* ================= SPAWN COLLECTIBLE ================= */
+
+function spawnCollectible(
+  lane,
+  z
+){
+
+  const mesh =
+    new THREE.Mesh(
+      COLLECTIBLE_GEO,
+      COLLECTIBLE_MAT
+    );
+
+
+  mesh.position.set(
+    CONFIG.LANES[lane],
+    1.15,
+    z
+  );
+
+
+  mesh.castShadow = true;
+
+
+  scene.add(mesh);
+
+
+  collectibles.push({
+
+    mesh:mesh,
+
+    lane:lane,
+
+    seed:
+      Math.random() * 10
+
+  });
+
+}
+
+
+/* ================= UPDATE COLLECTIBLES ================= */
+
+function updateCollectibles(dt){
+
+  const moveZ =
+    speed * dt;
+
+
+  for(
+    let i=collectibles.length-1;
+    i>=0;
+    i--
+  ){
+
+    const c =
+      collectibles[i];
+
+
+    c.mesh.position.z +=
+      moveZ;
+
+
+    c.mesh.rotation.y +=
+      dt * 3;
+
+
+    c.mesh.position.y =
+      1.15 +
+      Math.sin(
+        elapsed * 5 +
+        c.seed
+      ) * 0.12;
+
+
+    const dx =
+      Math.abs(
+        c.mesh.position.x -
+        player.position.x
+      );
+
+
+    const dz =
+      Math.abs(
+        c.mesh.position.z -
+        player.position.z
+      );
+
+
+    if(
+      dx < 0.95 &&
+      dz < 1.05
+    ){
+
+      score +=
+        CONFIG.ORB_SCORE *
+        multiplier;
+
+
+      createParticleBurst(
+        c.mesh.position,
+        0xffd60a,
+        12
+      );
+
+
+      playSound("collect");
+
+
+      scene.remove(
+        c.mesh
+      );
+
+
+      collectibles.splice(
+        i,
+        1
+      );
+
+
+      continue;
+
+    }
+
+
+    if(
+      c.mesh.position.z >
+      CONFIG.DESPAWN_Z
+    ){
+
+      scene.remove(
+        c.mesh
+      );
+
+
+      collectibles.splice(
+        i,
+        1
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ================= INPUT ================= */
+
+function handleInput(){
+
+  window.addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.key === "ArrowLeft" ||
+        event.key === "a" ||
+        event.key === "A"
+      ){
+
+        event.preventDefault();
+
+        movePlayer(-1);
+
+      }
+
+
+      else if(
+        event.key === "ArrowRight" ||
+        event.key === "d" ||
+        event.key === "D"
+      ){
+
+        event.preventDefault();
+
+        movePlayer(1);
+
+      }
+
+
+      else if(
+        event.key === "Escape" ||
+        event.key === "p" ||
+        event.key === "P"
+      ){
+
+        if(
+          state === "PLAYING"
+        ){
+
+          pauseGame();
+
+        }else if(
+          state === "PAUSED"
+        ){
+
+          resumeGame();
+
+        }
+
+      }
+
+    }
+  );
+
+
+  const canvas =
+    document.getElementById(
+      "gameCanvas"
+    );
+
+
+  canvas.addEventListener(
+    "touchstart",
+    event => {
+
+      if(
+        event.touches.length !== 1
+      ){
+
+        return;
+
+      }
+
+
+      const touch =
+        event.touches[0];
+
+
+      touchStartX =
+        touch.clientX;
+
+
+      touchStartY =
+        touch.clientY;
+
+
+      touchStartTime =
+        performance.now();
+
+
+      touchActive = true;
+
+    },
+    {passive:true}
+  );
+
+
+  canvas.addEventListener(
+    "touchmove",
+    event => {
+
+      if(
+        state === "PLAYING"
+      ){
+
+        event.preventDefault();
+
+      }
+
+    },
+    {passive:false}
+  );
+
+
+  canvas.addEventListener(
+    "touchend",
+    event => {
+
+      if(!touchActive){
+        return;
+      }
+
+
+      touchActive = false;
+
+
+      const touch =
+        event.changedTouches[0];
+
+
+      const dx =
+        touch.clientX -
+        touchStartX;
+
+
+      const dy =
+        touch.clientY -
+        touchStartY;
+
+
+      const duration =
+        performance.now() -
+        touchStartTime;
+
+
+      if(
+        Math.abs(dx) >
+        Math.abs(dy) &&
+
+        Math.abs(dx) >
+        32 &&
+
+        duration < 700
+      ){
+
+        movePlayer(
+          dx > 0
+            ? 1
+            : -1
+        );
+
+      }
+
+    },
+    {passive:true}
+  );
+
+}
+
+
+/* ================= COLLISION ================= */
+
+function checkCollisions(){
+
+  if(
+    invulnerableTimer > 0
+  ){
+    return;
+  }
+
+
+  playerBox.setFromObject(
+    player
+  );
+
+
+  playerBox.expandByScalar(
+    -0.18
+  );
+
+
+  for(
+    let i=0;
+    i<obstacles.length;
+    i++
+  ){
+
+    const obj =
+      obstacles[i];
+
+
+    if(obj.hit){
+      continue;
+    }
+
+
+    if(
+      Math.abs(
+        obj.mesh.position.z -
+        player.position.z
+      ) > 1.6
+    ){
+
+      continue;
+
+    }
+
+
+    const obstacleBox =
+      new THREE.Box3()
+        .setFromObject(
+          obj.mesh
+        );
+
+
+    obstacleBox.expandByScalar(
+      -0.12
+    );
+
+
+    if(
+      playerBox.intersectsBox(
+        obstacleBox
+      )
+    ){
+
+      handleCollision(
+        obj
+      );
+
+      break;
+
+    }
+
+  }
+
+}
+
+
+/* ================= COLLISION RESPONSE ================= */
+
+function handleCollision(
+  obstacle
+){
+
+  obstacle.hit = true;
+
+
+  lives =
+    Math.max(
+      0,
+      lives - 1
+    );
+
+
+  invulnerableTimer =
+    CONFIG.INVULNERABILITY_TIME;
+
+
+  cameraShake = 0.35;
+
+
+  createParticleBurst(
+    player.position,
+    0xff4d6d,
+    16
+  );
+
+
+  playSound("hit");
+
+
+  flashHit();
+
+
+  updateUI();
+
+
+  if(
+    lives <= 0
+  ){
+
+    gameOver();
+
+  }
+
+}
+
+
+/* ================= FLASH ================= */
+
+function flashHit(){
+
+  const element =
+    document.getElementById(
+      "hitFlash"
+    );
+
+
+  element.classList.remove(
+    "flash"
+  );
+
+
+  void element.offsetWidth;
+
+
+  element.classList.add(
+    "flash"
+  );
+
+}
+
+
+/* ================= SCORE ================= */
+
+function updateScore(dt){
+
+  distance +=
+    speed * dt;
+
+
+  multiplier =
+    1 +
+    Math.floor(
+      elapsed / 20
+    ) *
+    0.5;
+
+
+  score +=
+    CONFIG.SCORE_PER_SECOND *
+    dt *
+    multiplier *
+    (speed / CONFIG.BASE_SPEED);
+
+}
+
+
+/* ================= DIFFICULTY ================= */
+
+function updateDifficulty(dt){
+
+  elapsed += dt;
+
+
+  speed =
+    Math.min(
+      CONFIG.MAX_SPEED,
+
+      CONFIG.BASE_SPEED +
+      elapsed *
+      CONFIG.DIFFICULTY_RATE
+    );
+
+}
+
+
+/* ================= PARTICLES ================= */
+
+function initParticleCache(){
+
+  PARTICLE_GEO =
+    new THREE.SphereGeometry(
+      0.1,
+      6,
+      6
+    );
+
+}
+
+
+function createParticleBurst(
+  position,
+  color,
+  count
+){
+
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
+
+    if(
+      particles.length >=
+      CONFIG.MAX_PARTICLES
+    ){
+
+      break;
+
+    }
+
+
+    const material =
+      new THREE.MeshBasicMaterial({
+        color:color,
+        transparent:true,
+        opacity:1
+      });
+
+
+    const mesh =
+      new THREE.Mesh(
+        PARTICLE_GEO,
+        material
+      );
+
+
+    mesh.position.copy(
+      position
+    );
+
+
+    mesh.scale.setScalar(
+      rand(0.6,1.3)
+    );
+
+
+    scene.add(mesh);
+
+
+    particles.push({
+
+      mesh:mesh,
+
+      vel:
+        new THREE.Vector3(
+          rand(-3,3),
+          rand(2,5),
+          rand(-3,3)
+        ),
+
+      life:
+        rand(0.45,0.85),
+
+      maxLife:0.85
+
+    });
+
+  }
+
+}
+
+
+function updateParticles(dt){
+
+  for(
+    let i=particles.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p =
+      particles[i];
+
+
+    p.vel.y -=
+      7 * dt;
+
+
+    p.mesh.position
+      .addScaledVector(
+        p.vel,
+        dt
+      );
+
+
+    p.life -= dt;
+
+
+    p.mesh.material.opacity =
+      clamp(
+        p.life /
+        p.maxLife,
+        0,
+        1
+      );
+
+
+    if(
+      p.life <= 0
+    ){
+
+      scene.remove(
+        p.mesh
+      );
+
+
+      p.mesh.material.dispose();
+
+
+      particles.splice(
+        i,
+        1
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ================= AUDIO ================= */
+
+function initAudio(){
+
+  if(audioCtx){
+    return;
+  }
+
+
+  try{
+
+    const AudioContext =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+
+    if(!AudioContext){
+      return;
+    }
+
+
+    audioCtx =
+      new AudioContext();
+
+  }catch(error){
+
+    audioCtx = null;
+
+  }
+
+}
+
+
+function playSound(kind){
+
+  if(
+    !soundEnabled ||
+    !audioCtx
+  ){
+
+    return;
+
+  }
+
+
+  try{
+
+    if(
+      audioCtx.state ===
+      "suspended"
+    ){
+
+      audioCtx.resume();
+
+    }
+
+
+    const now =
+      audioCtx.currentTime;
+
+
+    const oscillator =
+      audioCtx.createOscillator();
+
+
+    const gain =
+      audioCtx.createGain();
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+      audioCtx.destination
+    );
+
+
+    let frequency = 440;
+
+    let duration = 0.12;
+
+    let wave = "sine";
+
+
+    if(
+      kind === "click"
+    ){
+
+      frequency = 520;
+
+      duration = 0.06;
+
+      wave = "triangle";
+
+    }
+
+
+    else if(
+      kind === "collect"
+    ){
+
+      frequency = 880;
+
+      duration = 0.14;
+
+      wave = "sine";
+
+    }
+
+
+    else if(
+      kind === "hit"
+    ){
+
+      frequency = 150;
+
+      duration = 0.26;
+
+      wave = "sawtooth";
+
+    }
+
+
+    else if(
+      kind === "record"
+    ){
+
+      frequency = 660;
+
+      duration = 0.45;
+
+      wave = "square";
+
+    }
+
+
+    oscillator.type =
+      wave;
+
+
+    oscillator.frequency.setValueAtTime(
+      frequency,
+      now
+    );
+
+
+    if(
+      kind === "collect"
+    ){
+
+      oscillator.frequency
+        .exponentialRampToValueAtTime(
+          frequency * 1.8,
+          now + duration
+        );
+
+    }
+
+
+    if(
+      kind === "record"
+    ){
+
+      oscillator.frequency
+        .setValueAtTime(
+          frequency,
+          now
+        );
+
+      oscillator.frequency
+        .setValueAtTime(
+          frequency * 1.3,
+          now + 0.15
+        );
+
+      oscillator.frequency
+        .setValueAtTime(
+          frequency * 1.6,
+          now + 0.3
+        );
+
+    }
+
+
+    gain.gain.setValueAtTime(
+      0.16,
+      now
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      now + duration
+    );
+
+
+    oscillator.start(now);
+
+    oscillator.stop(
+      now + duration + 0.03
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Audio error",
+      error
+    );
+
+  }
+
+}
+
+
+/* ================= UI ================= */
+
+function el(id){
+
+  return document.getElementById(id);
+
+}
+
+
+function updateUI(){
+
+  el("hudScore")
+    .textContent =
+      Math.floor(
+        score
+      ).toLocaleString();
+
+
+  el("hudBest")
+    .textContent =
+      "Best " +
+      Math.max(
+        best,
+        Math.floor(score)
+      ).toLocaleString();
+
+
+  el("hudMultiplier")
+    .textContent =
+      "x" +
+      multiplier
+        .toFixed(1)
+        .replace(
+          /\.0$/,
+          ""
+        );
+
+
+  el("hudDistance")
+    .textContent =
+      Math.floor(
+        distance
+      ) +
+      " m";
+
+
+  el("hudLives")
+    .textContent =
+      "❤️".repeat(
+        Math.max(
+          0,
+          lives
+        )
+      ) +
+      "🖤".repeat(
+        Math.max(
+          0,
+          CONFIG.START_LIVES -
+          lives
+        )
+      );
+
+}
+
+
+function updateMenuBest(){
+
+  el("menuBest")
+    .textContent =
+      best.toLocaleString();
+
+}
+
+
+function showToast(message){
+
+  const toast =
+    el("toast");
+
+
+  toast.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    showToast.timer
+  );
+
+
+  showToast.timer =
+    setTimeout(
+      () => {
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      1800
+    );
+
+}
+
+
+function showScreen(id){
+
+  document
+    .querySelectorAll(".screen")
+    .forEach(
+      screen =>
+        screen.classList.remove(
+          "active"
+        )
+    );
+
+
+  if(id){
+
+    const screen =
+      el(id);
+
+
+    if(screen){
+
+      screen.classList.add(
+        "active"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* ================= UI BINDING ================= */
+
+function bindUI(){
+
+  el("playBtn")
+    .addEventListener(
+      "click",
+      startGame
+    );
+
+
+  el("howToPlayBtn")
+    .addEventListener(
+      "click",
+      () => {
+
+        playSound("click");
+
+        showScreen(
+          "howToPlayScreen"
+        );
+
+      }
+    );
+
+
+  el("backFromHowToPlayBtn")
+    .addEventListener(
+      "click",
+      () => {
+
+        playSound("click");
+
+        showScreen(
+          "menuScreen"
+        );
+
+      }
+    );
+
+
+  el("soundToggleBtn")
+    .addEventListener(
+      "click",
+      () => {
+
+        soundEnabled =
+          !soundEnabled;
+
+
+        el(
+          "soundToggleBtn"
+        ).textContent =
+          soundEnabled
+            ? "🔊 Sound on"
+            : "🔇 Sound off";
+
+
+        if(
+          soundEnabled
+        ){
+
+          initAudio();
+
+          playSound(
+            "click"
+          );
+
+        }
+
+      }
+    );
+
+
+  el("pauseBtn")
+    .addEventListener(
+      "click",
+      pauseGame
+    );
+
+
+  el("resumeBtn")
+    .addEventListener(
+      "click",
+      resumeGame
+    );
+
+
+  el("restartFromPauseBtn")
+    .addEventListener(
+      "click",
+      restartGame
+    );
+
+
+  el("menuFromPauseBtn")
+    .addEventListener(
+      "click",
+      returnToMenu
+    );
+
+
+  el("playAgainBtn")
+    .addEventListener(
+      "click",
+      restartGame
+    );
+
+
+  el("shareBtn")
+    .addEventListener(
+      "click",
+      shareScore
+    );
+
+
+  el("menuFromGameOverBtn")
+    .addEventListener(
+      "click",
+      returnToMenu
+    );
+
+}
+
+
+/* ================= CLEAR ENTITIES ================= */
+
+function clearEntities(){
+
+  obstacles.forEach(
+    obstacle =>
+      scene.remove(
+        obstacle.mesh
+      )
+  );
+
+
+  obstacles.length = 0;
+
+
+  collectibles.forEach(
+    collectible =>
+      scene.remove(
+        collectible.mesh
+      )
+  );
+
+
+  collectibles.length = 0;
+
+
+  particles.forEach(
+    particle => {
+
+      scene.remove(
+        particle.mesh
+      );
+
+      if(
+        particle.mesh.material
+      ){
+
+        particle.mesh.material.dispose();
+
+      }
+
+    }
+  );
+
+
+  particles.length = 0;
+
+}
+
+
+/* ================= RESET GAME ================= */
+
+function resetGameVars(){
+
+  clearEntities();
+
+
+  lives =
+    CONFIG.START_LIVES;
+
+
+  score = 0;
+
+  multiplier = 1;
+
+  distance = 0;
+
+  elapsed = 0;
+
+  speed =
+    CONFIG.BASE_SPEED;
+
+
+  spawnTimer = 0;
+
+  spawnInterval =
+    CONFIG.SPAWN_INTERVAL_START;
+
+
+  currentLane = 1;
+
+  targetLaneX =
+    CONFIG.LANES[1];
+
+
+  player.position.set(
+    CONFIG.LANES[1],
+    0,
+    0
+  );
+
+
+  player.rotation.set(
+    0,
+    0,
+    0
+  );
+
+
+  bobTime = 0;
+
+  invulnerableTimer = 0;
+
+  cameraShake = 0;
+
+  camLerpX =
+    CONFIG.LANES[1];
+
+
+  updateUI();
+
+}
+
+
+/* ================= START ================= */
+
+function startGame(){
+
+  initAudio();
+
+  playSound("click");
+
+
+  resetGameVars();
+
+
+  state =
+    "PLAYING";
+
+
+  showScreen(null);
+
+
+  el("hud")
+    .classList.add(
+      "active"
+    );
+
+
+  if(
+    clock
+  ){
+
+    clock.getDelta();
+
+  }
+
+}
+
+
+/* ================= PAUSE ================= */
+
+function pauseGame(){
+
+  if(
+    state !== "PLAYING"
+  ){
+
+    return;
+
+  }
+
+
+  state =
+    "PAUSED";
+
+
+  playSound("click");
+
+
+  showScreen(
+    "pauseScreen"
+  );
+
+}
+
+
+/* ================= RESUME ================= */
+
+function resumeGame(){
+
+  if(
+    state !== "PAUSED"
+  ){
+
+    return;
+
+  }
+
+
+  if(clock){
+
+    clock.getDelta();
+
+  }
+
+
+  state =
+    "PLAYING";
+
+
+  playSound("click");
+
+
+  showScreen(null);
+
+
+  el("hud")
+    .classList.add(
+      "active"
+    );
+
+}
+
+
+/* ================= RESTART ================= */
+
+function restartGame(){
+
+  startGame();
+
+}
+
+
+/* ================= MENU ================= */
+
+function returnToMenu(){
+
+  state =
+    "MENU";
+
+
+  playSound("click");
+
+
+  el("hud")
+    .classList.remove(
+      "active"
+    );
+
+
+  updateMenuBest();
+
+
+  showScreen(
+    "menuScreen"
+  );
+
+}
+
+
+/* ================= GAME OVER ================= */
+
+function gameOver(){
+
+  if(
+    state === "GAME_OVER"
+  ){
+
+    return;
+
+  }
+
+
+  state =
+    "GAME_OVER";
+
+
+  const finalScore =
+    Math.floor(
+      score
+    );
+
+
+  let newRecord =
+    false;
+
+
+  if(
+    finalScore >
+    best
+  ){
+
+    best =
+      finalScore;
+
+
+    saveStoredBest(
+      best
+    );
+
+
+    newRecord =
+      true;
+
+  }
+
+
+  el("finalScore")
+    .textContent =
+      finalScore.toLocaleString();
+
+
+  el("finalBest")
+    .textContent =
+      best.toLocaleString();
+
+
+  el("finalDistance")
+    .textContent =
+      Math.floor(
+        distance
+      ) +
+      " m";
+
+
+  el("newRecordBadge")
+    .style.display =
+      newRecord
+        ? "inline-block"
+        : "none";
+
+
+  if(newRecord){
+
+    setTimeout(
+      () => {
+
+        if(
+          state === "GAME_OVER"
+        ){
+
+          playSound(
+            "record"
+          );
+
+        }
+
+      },
+      250
+    );
+
+  }
+
+
+  el("hud")
+    .classList.remove(
+      "active"
+    );
+
+
+  showScreen(
+    "gameOverScreen"
+  );
+
+}
+
+
+/* ================= SHARE ================= */
+
+async function shareScore(){
+
+  const scoreText =
+    Math.floor(
+      score
+    ).toLocaleString();
+
+
+  const text =
+    "I scored " +
+    scoreText +
+    " in SKYBOUND: CHAOS RUN! 🚀 Can you beat my score?";
+
+
+  const shareData = {
+
+    title:
+      "SKYBOUND: Chaos Run",
+
+    text:text,
+
+    url:
+      CONFIG.GAME_URL
+
+  };
+
+
+  if(
+    navigator.share
+  ){
+
+    try{
+
+      await navigator.share(
+        shareData
+      );
+
+      return;
+
+    }catch(error){
+
+      if(
+        error &&
+        error.name ===
+        "AbortError"
+      ){
+
+        return;
+
+      }
+
+    }
+
+  }
+
+
+  const fullText =
+    text +
+    "\n" +
+    CONFIG.GAME_URL;
+
+
+  if(
+    navigator.clipboard &&
+    navigator.clipboard.writeText
+  ){
+
+    try{
+
+      await navigator.clipboard.writeText(
+        fullText
+      );
+
+      showToast(
+        "Score and game link copied!"
+      );
+
+      return;
+
+    }catch(error){
+
+      console.warn(
+        "Clipboard failed",
+        error
+      );
+
+    }
+
+  }
+
+
+  window.prompt(
+    "Copy your score and game link:",
+    fullText
+  );
+
+}
+
+
+/* ================= CAMERA ================= */
+
+function updateCamera(dt){
+
+  if(!player) return;
+
+
+  camLerpX +=
+    (
+      player.position.x -
+      camLerpX
+    ) *
+    Math.min(
+      1,
+      6 * dt
+    );
+
+
+  let shakeX = 0;
+
+  let shakeY = 0;
+
+
+  if(
+    cameraShake > 0
+  ){
+
+    cameraShake =
+      Math.max(
+        0,
+        cameraShake -
+        dt * 1.4
+      );
+
+
+    shakeX =
+      (
+        Math.random() -
+        0.5
+      ) *
+      cameraShake;
+
+
+    shakeY =
+      (
+        Math.random() -
+        0.5
+      ) *
+      cameraShake *
+      0.6;
+
+  }
+
+
+  camera.position.set(
+    camLerpX + shakeX,
+    5.2 + shakeY,
+    9
+  );
+
+
+  camera.lookAt(
+    camLerpX * 0.4,
+    1.4,
+    -18
+  );
+
+}
+
+
+/* ================= GAME LOOP ================= */
+
+function animate(){
+
+  requestAnimationFrame(
+    animate
+  );
+
+
+  let dt =
+    clock.getDelta();
+
+
+  dt =
+    Math.min(
+      dt,
+      0.05
+    );
+
+
+  if(
+    state === "PLAYING"
+  ){
+
+    updateDifficulty(dt);
+
+    updatePlayer(dt);
+
+    updateRoad(dt);
+
+    updateEnvironment(dt);
+
+    spawnObstacle(dt);
+
+    updateObstacles(dt);
+
+    updateCollectibles(dt);
+
+    checkCollisions();
+
+    updateScore(dt);
+
+    updateParticles(dt);
+
+    updateCamera(dt);
+
+    updateUI();
+
+  }
+
+
+  else if(
+    state === "MENU"
+  ){
+
+    idleAnim(dt);
+
+    updateCamera(dt);
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+/* ================= RESIZE ================= */
+
+function onResize(){
+
+  if(
+    !camera ||
+    !renderer
+  ){
+
+    return;
+
+  }
+
+
+  camera.aspect =
+    window.innerWidth /
+    window.innerHeight;
+
+
+  camera.updateProjectionMatrix();
+
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+
+}
+
+
+/* ================= INITIALIZATION ================= */
+
+function init(){
+
+  createScene();
+
+  createCamera();
+
+  createLights();
+
+  createPlayer();
+
+  createRoad();
+
+  createEnvironment();
+
+  initObstacleCaches();
+
+  initCollectibleCache();
+
+  initParticleCache();
+
+  handleInput();
+
+  bindUI();
+
+
+  best =
+    loadStoredBest();
+
+
+  updateMenuBest();
+
+  updateUI();
+
+
+  showScreen(
+    "menuScreen"
+  );
+
+
+  window.addEventListener(
+    "resize",
+    onResize
+  );
+
+
+  animate();
+
+}
+
+
+/* ================= START ================= */
+
+try{
+
+  init();
+
+}catch(error){
+
+  console.error(
+    "SKYBOUND initialization error:",
+    error
+  );
+
+
+  if(
+    window.__skyboundFatalError
+  ){
+
+    window.__skyboundFatalError(
+      error.message ||
+      String(error)
+    );
+
+  }
+
+}
+
+}
+</script>
+
+</body>
+</html>
